@@ -1,4 +1,5 @@
 import { useState } from "react"
+import AddModifyUserForm from "../AddModifyUserForm/AddModifyUserForm"
 
 let initialUsers = [
     { "email": "johns@email.com", "name": "John Smith", "age": 40 },
@@ -11,9 +12,36 @@ let maxNameLength = 10
 export default function LocalForm() {
     let [users, setUsers] = useState(initialUsers)
     let [searchValue, setSearch] = useState("")
-
+    
     // Search textbox update content
     let handleSearch = e => setSearch(e.target.value)
+    let [newUserName, setNewUserName] = useState("")
+    let [newUserAge, setNewUserAge] = useState("")
+    let [newUserEmail, setNewUserEmail] = useState("")
+
+    // Add user to list
+    function fnAdd(email, name, age) {
+        setUsers([...users, {
+            "email": email,
+            "name": name,
+            "age": age
+            }]
+        );
+        setNewUserName("");
+        setNewUserAge("");
+        setNewUserEmail("");
+    }
+
+    // Editar elemento de la lista de usuarios.
+    function fnEdit(itemIndex) {
+
+    }
+
+    // Eliminar elemento de la lista de usuarios.
+    function fnDelete(itemEmail) {
+        const updatedUsers = users.filter(user => user.email !== itemEmail);
+        setUsers(updatedUsers);
+    }
 
     return (
         <div>
@@ -26,13 +54,20 @@ export default function LocalForm() {
             </span>
             <h2>Lista de usuarios</h2>
             <button>Nuevo usuario</button>
+
+            <AddModifyUserForm
+                onAddUser={fnAdd}
+                BtnText="Agregar"
+                Title="Agregar usuario"
+            />
             
+
             <table>
                 <thead>
                     <tr>
-                        <th>Email</th>
                         <th>Nombre</th>
                         <th>Edad</th>
+                        <th>Email</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -41,11 +76,11 @@ export default function LocalForm() {
                     {
                         users.map((el, idx) => {
                             return (<tr key={idx}>
-                                <td>{el.email}</td>
                                 <td>{truncateText(el.name, maxNameLength)}</td>
                                 <td>{el.age}</td>
-                                <td><button>Editar</button></td>
-                                <td><button>Eliminar</button></td>
+                                <td>{el.email}</td>
+                                <td><button onClick={fnEdit(idx)}>Editar</button></td>
+                                <td><button onClick={() => fnDelete(el.email)}>Eliminar</button></td>
                             </tr>)
                         })
                     }
@@ -53,7 +88,7 @@ export default function LocalForm() {
             </table>
 
             <span>
-                <p>Usuarios: {Object.keys(initialUsers).length}</p>
+                <p>Usuarios: {Object.keys(users).length}</p>
             </span>
         </div>
     )

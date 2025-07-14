@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export default function AddModifyUserForm( {onAddUser, BtnText, Title} ) {
+export default function AddUserForm( {onBtnAddUser} ) {
 
     let [newUserName, setNewUserName] = useState("")
     let [newUserAge, setNewUserAge] = useState("")
@@ -13,7 +13,7 @@ export default function AddModifyUserForm( {onAddUser, BtnText, Title} ) {
 
     return (
         <div>
-            <h2>{Title}</h2>
+            <h2>Agregar usuario</h2>
             <span>
                 <label>Nombre completo</label>
                 <input type="text" name="newUserName" value={newUserName} onChange={handleNewUserName}/>
@@ -26,7 +26,7 @@ export default function AddModifyUserForm( {onAddUser, BtnText, Title} ) {
                 <label>Email</label>
                 <input type="text" name="newUserEmail" value={newUserEmail} onChange={handleNewUserEmail}/>
             </span><br/>
-            <button onClick={() => onAddUser(newUserEmail, newUserName, newUserAge)}>{BtnText}</button>
+            <button onClick={() => onBtnAddUser(newUserEmail, newUserName, newUserAge)}>Guardar</button>
         </div>
     )
 }

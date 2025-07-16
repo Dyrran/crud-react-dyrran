@@ -1,6 +1,7 @@
 import { useState } from "react"
 import ModifyUserForm from "../ModifyUserForm/ModifyUserForm"
 import AddUserForm from "../AddUserForm/AddUserForm"
+import UserListForm from "../UserListForm/UserListForm"
 
 let initialUsers = [
     { "email": "johns@email.com", "name": "John Smith", "age": 40 },
@@ -13,12 +14,11 @@ let maxNameLength = 10
 export default function LocalForm() {
     let [users, setUsers] = useState(initialUsers)
     let [searchValue, setSearch] = useState("")
-    
+    let [usersFiltered, setUsersFiltered] = useState([])
+    let [isSensChecked, setSensChecked] = useState(false)
+
     // Search textbox update content
     let handleSearch = e => setSearch(e.target.value)
-    let [newUserName, setNewUserName] = useState("")
-    let [newUserAge, setNewUserAge] = useState("")
-    let [newUserEmail, setNewUserEmail] = useState("")
 
     // Possible values: 0=none, 1=add, 2=edit
     let [showAddModUser, setShowAddModUser] = useState(0)
@@ -27,9 +27,35 @@ export default function LocalForm() {
     let formAddModUser = null
     let [disableButtons, setDisableButtons] = useState(false)
 
+    function filterUsers(request) {
+        return users.filter(
+            // CONTINUAR ESTO
+            // https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+            (el) => el.toLowerCase().indexOf(request.toLowerCase()) > -1
+        )
+    }
+
     // Search
-    function fnSearch() {
+    // CONTINUAR ESTO
+    function fnSearch(criteria) {
         
+        if ( setSensChecked == true ) { // Búsqueda exacta, sensible
+            if ( criteria == "byName" ) {
+                setUsersFiltered(...users.filter(el=>el.name == searchValue))
+            } else if ( criteria == "byEmail" ) {
+                setUsersFiltered(...users.filter(el=>el.email == searchValue))
+            }
+        } else if ( setSensChecked == false ) { // Busqueda inexacta
+            if ( criteria == "byName" ) {
+                setUsersFiltered(...users.filter(filterUsers)) // VERIFICAR
+            } else if ( criteria == "byEmail" ) {
+                setUsersFiltered(...users.filter(filterUsers)) // VERIFICAR
+            }
+        }
+    }
+
+    let handleCheckboxChange = ( event ) => {
+        setSensChecked(event.target.checked)
     }
 
     // Add user to list
@@ -82,7 +108,7 @@ export default function LocalForm() {
     }
 
     // Decidir cuál formulario mostrar: agregar o editar ítem.
-    if ( showAddModUser === 1) {
+    if ( showAddModUser === 1 ) {
         formAddModUser = (
             <div>
                 <AddUserForm
@@ -109,6 +135,9 @@ export default function LocalForm() {
     return (
         <div>
             <h1>CRUD React</h1>
+            <button onClick={() => fnStartAdd()} disabled={disableButtons}>Nuevo usuario</button>
+            {formAddModUser}
+
             <h2>Buscar un usuario</h2>
             <label>Buscar por</label>
             <select name="searchOptions">
@@ -118,17 +147,22 @@ export default function LocalForm() {
             <label>Términos de búsqueda</label>
             <input type="text" name="searchValue" value={searchValue} onChange={handleSearch}/>
             <button onClick={() => fnSearch()}>Buscar</button>
-            <input type="checkbox" name="searchCaseSensitive"/>
+            <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
             <label for="searchCaseSensitive">Búsqueda exacta</label>
-
+            
             <h2>Lista de usuarios</h2>
-            <button onClick={() => fnStartAdd()} disabled={disableButtons}>Nuevo usuario</button>
 
-            <div>
-                {formAddModUser}
-            </div>
+            <UserListForm
+                DataObject={users}
+                maxNameLength={maxNameLength}
+                btnFunction1={fnStartEdit}
+                btnLabel1="Editar"
+                btnFunction2={fnDelete}
+                btnLabel2="Eliminar"
+                triggerBtnDisable={disableButtons}
+            />
 
-            <table>
+            {/* <table>
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -142,7 +176,7 @@ export default function LocalForm() {
                     {
                         users.map((el, idx) => {
                             return (<tr key={idx}>
-                                <td>{truncateText(el.name, maxNameLength)}</td>
+                                <td title={el.name}>{truncateText(el.name, maxNameLength)}</td>
                                 <td>{el.age}</td>
                                 <td>{el.email}</td>
                                 <td><button onClick={() => fnStartEdit(idx)} disabled={disableButtons}>Editar</button></td>
@@ -151,7 +185,7 @@ export default function LocalForm() {
                         })
                     }
                 </tbody>
-            </table>
+            </table> */}
 
             <span>
                 <p>Usuarios: {Object.keys(users).length}</p>

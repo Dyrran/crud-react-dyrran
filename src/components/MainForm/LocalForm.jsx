@@ -33,7 +33,8 @@ export default function LocalForm() {
         return users.filter(
             // CONTINUAR ESTO
             // https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-            (el) => el.toLowerCase().indexOf(request.toLowerCase()) > -1
+            // (el) => el.toLowerCase().indexOf(request.toLowerCase()) > -1
+            (el) => el.name == request
         )
     }
 
@@ -41,19 +42,31 @@ export default function LocalForm() {
     // CONTINUAR ESTO
     function fnSearch(criteria) {
         
-        if ( setSensChecked == true ) { // Búsqueda exacta, sensible
+        if ( isSensChecked == true ) { // Búsqueda exacta, sensible
             if ( criteria == "byName" ) {
                 setUsersFiltered(...users.filter(el=>el.name == searchValue))
             } else if ( criteria == "byEmail" ) {
                 setUsersFiltered(...users.filter(el=>el.email == searchValue))
             }
-        } else if ( setSensChecked == false ) { // Busqueda inexacta
+        } else if ( isSensChecked == false ) { // Busqueda inexacta
             if ( criteria == "byName" ) {
-                setUsersFiltered(...users.filter(filterUsers)) // VERIFICAR
+                setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
             } else if ( criteria == "byEmail" ) {
-                setUsersFiltered(...users.filter(filterUsers)) // VERIFICAR
+                setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
             }
         }
+
+        formSearchResults = (
+            <UserListForm
+                DataObject={usersFiltered}
+                maxNameLength={maxNameLength}
+                btnFunction1={fnStartEdit}
+                btnLabel1="Editar"
+                btnFunction2={fnDelete}
+                btnLabel2="Eliminar"
+                triggerBtnDisable={disableButtons}
+            />
+        )
     }
 
     let handleCheckboxChange = ( event ) => {
@@ -148,7 +161,7 @@ export default function LocalForm() {
             </select>
             <label>Términos de búsqueda</label>
             <input type="text" name="searchValue" value={searchValue} onChange={handleSearch}/>
-            <button onClick={() => fnSearch()}>Buscar</button>
+            <button onClick={() => fnSearch("byName")}>Buscar</button>
             <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
             <label for="searchCaseSensitive">Búsqueda exacta</label>
             {formSearchResults}

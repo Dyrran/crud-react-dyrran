@@ -24,8 +24,10 @@ export default function LocalForm() {
     let [showAddModUser, setShowAddModUser] = useState(0)
 
     let [indexToEdit, setIndexToEdit] = useState(null)
-    let formAddModUser = null
-    let [disableButtons, setDisableButtons] = useState(false)
+    let formAddModUser = null // Diálogo para mostrar menú de agregar usuario
+    let [disableButtons, setDisableButtons] = useState(false) // Desactivar todos los botones deseados a un clic
+    let formSearchResults = null // Diálogo para mostrar los resultados de búsqueda
+    let [showFormSearchResults, setShowFormSearchResults] = useState(false) // Para activar/desactivar form de mostrar resultados de búsqueda
 
     function filterUsers(request) {
         return users.filter(
@@ -149,6 +151,7 @@ export default function LocalForm() {
             <button onClick={() => fnSearch()}>Buscar</button>
             <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
             <label for="searchCaseSensitive">Búsqueda exacta</label>
+            {formSearchResults}
             
             <h2>Lista de usuarios</h2>
 

@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRef } from "react"
 import ModifyUserForm from "../ModifyUserForm/ModifyUserForm"
 import AddUserForm from "../AddUserForm/AddUserForm"
 import UserListForm from "../UserListForm/UserListForm"
@@ -26,47 +27,40 @@ export default function LocalForm() {
     let [indexToEdit, setIndexToEdit] = useState(null)
     let formAddModUser = null // Diálogo para mostrar menú de agregar usuario
     let [disableButtons, setDisableButtons] = useState(false) // Desactivar todos los botones deseados a un clic
-    let formSearchResults = null // Diálogo para mostrar los resultados de búsqueda
+    let [formSearchResults, setFormSearchResults] = useState(null) // Diálogo para mostrar los resultados de búsqueda
     let [showFormSearchResults, setShowFormSearchResults] = useState(false) // Para activar/desactivar form de mostrar resultados de búsqueda
 
-    function filterUsers(request) {
-        return users.filter(
-            // CONTINUAR ESTO
-            // https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-            // (el) => el.toLowerCase().indexOf(request.toLowerCase()) > -1
-            (el) => el.name == request
-        )
-    }
+    let fitroBusquedaRef = useRef(null)
 
     // Search
     // CONTINUAR ESTO
-    function fnSearch(criteria) {
-        
-        if ( isSensChecked == true ) { // Búsqueda exacta, sensible
-            if ( criteria == "byName" ) {
-                setUsersFiltered(...users.filter(el=>el.name == searchValue))
-            } else if ( criteria == "byEmail" ) {
-                setUsersFiltered(...users.filter(el=>el.email == searchValue))
-            }
-        } else if ( isSensChecked == false ) { // Busqueda inexacta
-            if ( criteria == "byName" ) {
-                setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
-            } else if ( criteria == "byEmail" ) {
-                setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
-            }
-        }
+    function fnSearch() {
 
-        formSearchResults = (
-            <UserListForm
-                DataObject={usersFiltered}
-                maxNameLength={maxNameLength}
-                btnFunction1={fnStartEdit}
-                btnLabel1="Editar"
-                btnFunction2={fnDelete}
-                btnLabel2="Eliminar"
-                triggerBtnDisable={disableButtons}
-            />
-        )
+        // if ( isSensChecked == true ) { // Búsqueda exacta, sensible
+        //     if ( criteria == "byName" ) {
+        //         setUsersFiltered(...users.filter(el=>el.name == searchValue))
+        //     } else if ( criteria == "byEmail" ) {
+        //         setUsersFiltered(...users.filter(el=>el.email == searchValue))
+        //     }
+        // }
+        // else if ( isSensChecked == false ) { // Busqueda inexacta
+        //     if ( criteria == "byName" ) {
+        //         setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
+        //     } else if ( criteria == "byEmail" ) {
+        //         setUsersFiltered(...users.filter(el => filterUsers(el))) // VERIFICAR
+        //     }
+        // }
+
+        if ( fitroBusquedaRef.current.value == "byName" ) {
+            setUsersFiltered(users.filter((user) =>
+                user.name.toLowerCase().includes(searchValue.toLowerCase())))
+        } else if ( fitroBusquedaRef.current.value == "byAge" ) {
+            setUsersFiltered(users.filter((user) =>
+                user.age == searchValue))
+        } else if ( fitroBusquedaRef.current.value == "byEmail" ) {
+            setUsersFiltered(users.filter((user) =>
+                user.email.toLowerCase().includes(searchValue.toLowerCase())))
+        }
     }
 
     let handleCheckboxChange = ( event ) => {
@@ -155,16 +149,29 @@ export default function LocalForm() {
 
             <h2>Buscar un usuario</h2>
             <label>Buscar por</label>
-            <select name="searchOptions">
-                <option name="byName">Nombre</option>
-                <option name="byEmail">Email</option>
+            <select ref={fitroBusquedaRef}>
+                <option value="byName">Nombre</option>
+                <option value="byAge">Edad</option>
+                <option value="byEmail">Email</option>
             </select>
             <label>Términos de búsqueda</label>
             <input type="text" name="searchValue" value={searchValue} onChange={handleSearch}/>
-            <button onClick={() => fnSearch("byName")}>Buscar</button>
+            <button onClick={() => fnSearch()}>Buscar</button>
             <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
             <label for="searchCaseSensitive">Búsqueda exacta</label>
-            {formSearchResults}
+            {
+                usersFiltered.length > 0 && (
+                    <UserListForm
+                        DataObject={usersFiltered}
+                        maxNameLength={maxNameLength}
+                        btnFunction1={fnStartEdit}
+                        btnLabel1="Editar"
+                        btnFunction2={fnDelete}
+                        btnLabel2="Eliminar"
+                        triggerBtnDisable={disableButtons}
+                    />
+                )
+            }
             
             <h2>Lista de usuarios</h2>
 

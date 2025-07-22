@@ -63,9 +63,9 @@ export default function LocalForm() {
         }
     }
 
-    let handleCheckboxChange = ( event ) => {
-        setSensChecked(event.target.checked)
-    }
+    // let handleCheckboxChange = ( event ) => {
+    //     setSensChecked(event.target.checked)
+    // }
 
     // Add user to list
     function fnAdd(email, name, age) {
@@ -157,8 +157,8 @@ export default function LocalForm() {
             <label>Términos de búsqueda</label>
             <input type="text" name="searchValue" value={searchValue} onChange={handleSearch}/>
             <button onClick={() => fnSearch()}>Buscar</button>
-            <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
-            <label for="searchCaseSensitive">Búsqueda exacta</label>
+            {/* <input type="checkbox" name="searchCaseSensitive" checked={isSensChecked} onChange={handleCheckboxChange}/>
+            <label for="searchCaseSensitive">Búsqueda exacta</label> */}
             {
                 usersFiltered.length > 0 && (
                     <UserListForm
@@ -170,6 +170,11 @@ export default function LocalForm() {
                         btnLabel2="Eliminar"
                         triggerBtnDisable={disableButtons}
                     />
+                )
+            }
+            {
+                usersFiltered.length <= 0 && (
+                    <p>No hay resultados para mostrar.</p>
                 )
             }
             
